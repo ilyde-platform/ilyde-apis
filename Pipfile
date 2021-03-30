@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+connexion = {version = "==2.4.0", extras = ["swagger-ui"]}
+swagger-ui-bundle = ">=0.0.2"
+python-dateutil = ">=2.6.0"
+typing = ">=3.5.2.2"
+Werkzeug = "==0.16.1"
+PyYAML = "<5.3"
+python-jose = {extras = ["cryptography"], version = "*"}
+grpcio = "*"
+grpcio-tools = "*"
+minio = "==6.0.0"
+python-keycloak-client = "*"
+mlflow = "==1.12.1"
+etcd3 = "*"
+flask-cors = "*"
+elasticsearch = "*"
+boto3 = "*"
+gunicorn = "*"
+gevent = "*"
+python-decouple = "*"
+
+[dev-packages]
+tox = "*"
+
+[requires]
+python_version = "3.8"
