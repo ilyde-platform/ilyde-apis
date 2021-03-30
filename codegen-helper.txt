@@ -1,0 +1,12 @@
+help: generator
+
+cmd: java -jar vendor\jars\openapi-generator-cli-4.3.1.jar help generate
+
+help: config options for customization
+
+cmd: java -jar vendor\jars\openapi-generator-cli-4.3.1.jar config-help -l python-flask
+
+Server: generation:
+
+cmd: java -jar  vendor\jars\openapi-generator-cli-4.3.1.jar generate -i "Openapi Specifications\openapi.yaml" -g python-flask -o . -c configs\codegen-config.yml --enable-post-process-file --minimal-update
+

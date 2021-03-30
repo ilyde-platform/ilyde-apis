@@ -1,0 +1,2403 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: alessiofiorentino@hopenly.com
+  description: OpenApi interface which exposes Ilyde resources to frontends
+  termsOfService: http://swagger.io/terms/
+  title: Ilyde Apis
+  version: 0.0.1
+servers:
+- url: http://localhost:8080/api/v1.0
+tags:
+- description: datasets resources endpoints
+  name: Datasets
+- description: projects resources endpoints
+  name: Projects
+- description: files resources endpoints
+  name: Files
+- description: jobs, workspaces, cronjobs, experiments, deployments resources endpoints
+  name: Jobs
+- description: environments resources endpoints
+  name: Environments
+- description: hardwareTiers resources endpoints
+  name: HardwareTiers
+- description: models resources endpoints
+  name: Models
+- description: experiments resources endpoints
+  name: Experiments
+paths:
+  /datasets:
+    get:
+      operationId: search_datasets
+      parameters:
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: search Dataset Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for datasets
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+    post:
+      operationId: create_dataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dataset'
+        description: Dataset object to be created
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: Dataset details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a dataset
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+  /datasets/{id}:
+    delete:
+      operationId: delete_dataset
+      parameters:
+      - description: The ID of the dataset object to be deleted
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          pattern: ^[a-zA-Z0-9-]+$
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Delete a dataset
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+    get:
+      operationId: retrieve_dataset
+      parameters:
+      - description: The ID of the dataset object to be retrieved
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: Dataset details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Retrieve a dataset
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+    patch:
+      operationId: update_dataset
+      parameters:
+      - description: The ID of the dataset object to be updated
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dataset'
+        description: Dataset object to be updated
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: Dataset details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Update a dataset
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+  /datasets/{id}/versions:
+    get:
+      operationId: search_dataset_versions
+      parameters:
+      - description: The ID of the dataset object related to the version
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: List Version Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for dataset's versions
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+    post:
+      operationId: create_dataset_version
+      parameters:
+      - description: The ID of the dataset resource
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                source:
+                  enum:
+                    - Dataset
+                  type: string
+                dataset:
+                  type: string
+                version:
+                  type: string
+              required:
+                - source
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilesData'
+        description: files to update dataset with
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetVersion'
+          description: Upload Status
+        "204":
+          description: Operation succeeded
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create dataset's version
+      tags:
+      - Datasets
+      x-openapi-router-controller: apis_server.controllers.datasets_controller
+  /environments:
+    get:
+      operationId: list_environments
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: Hardware tiers list
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: List available Environments
+      tags:
+      - Environments
+      x-openapi-router-controller: apis_server.controllers.environments_controller
+  /experiments/{id}:
+    get:
+      operationId: get_experiment
+      parameters:
+      - description: The ID of the experiment resource
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: Experiment Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Get Experiment details by Id
+      tags:
+      - Experiments
+      x-openapi-router-controller: apis_server.controllers.experiments_controller
+  /experiments/{id}/artifacts:
+    get:
+      operationId: search_experiment_artifacts
+      parameters:
+      - description: The ID of the experiment resource
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The path prefix for filtering
+        explode: false
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artifacts'
+          description: Experiment's artifacts
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for experiment's artifacts
+      tags:
+      - Experiments
+      x-openapi-router-controller: apis_server.controllers.experiments_controller
+  /files/fetch:
+    get:
+      description: fetch experiment's artifacts, dataset's file and project's file
+      operationId: get_file
+      parameters:
+      - description: root location for dataset's or project's files
+        explode: true
+        in: query
+        name: bucket
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: the name of file to retrieve
+        explode: true
+        in: query
+        name: filename
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: the specific version of file to retrieve
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: the id of the experiment
+        explode: true
+        in: query
+        name: run_id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FileData'
+          description: file content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for dataset's versions
+      tags:
+      - Files
+      x-openapi-router-controller: apis_server.controllers.files_controller
+  /hardwaretiers:
+    get:
+      operationId: list_hardwaretiers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: Hardware tiers list
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: List available HardwareTiers
+      tags:
+      - HardwareTiers
+      x-openapi-router-controller: apis_server.controllers.hardware_tiers_controller
+  /jobs:
+    post:
+      operationId: create_job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+        description: Job object to be created
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: Job details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a job
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /jobs/{id}:
+    delete:
+      operationId: delete_job
+      parameters:
+      - description: The ID of the job object to deleted
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          pattern: ^[a-zA-Z0-9-]+$
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Delete a job
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+    get:
+      operationId: retrieve_job
+      parameters:
+      - description: The ID of the job object to retrieve
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: Job details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Retrieve a job
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+    patch:
+      operationId: update_job
+      parameters:
+      - description: The ID of the job object to update
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+        description: Job object to update
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: Job details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Update a job
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /jobs/{id}/logs:
+    get:
+      operationId: fetch_job_logs
+      parameters:
+      - description: The ID of the job to fetch logs
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generic'
+          description: Logs datails
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Fetch logs of a given job.
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /jobs/{id}/start:
+    post:
+      operationId: start_job
+      parameters:
+      - description: The ID of the job to start
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - in: query
+        name: start_with_latest_version
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Start a job
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /jobs/{id}/status:
+    get:
+      operationId: status_job
+      parameters:
+      - description: The ID of the job to get the state
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Get state of a job.
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /jobs/{id}/stop:
+    post:
+      operationId: stop_job
+      parameters:
+      - description: The ID of the job to stop
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Stop a Preparing, running and failed job.
+      tags:
+      - Jobs
+      x-openapi-router-controller: apis_server.controllers.jobs_controller
+  /models:
+    post:
+      operationId: create_model
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+        description: Request payload to create a model
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+          description: Model details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a model
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+  /models/{name}:
+    delete:
+      operationId: delete_model
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Delete a model
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+    get:
+      operationId: retrieve_model
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+          description: Model details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Retrieve a model
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+    patch:
+      operationId: update_model
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+        description: Model object to update
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+          description: Model details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Update a model
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+  /models/{name}/versions:
+    get:
+      operationId: list_model_versions
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTokenList'
+          description: Model version's list
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: list versions of a model
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+    post:
+      operationId: create_model_version
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelVersion'
+        description: Request payload to create a model version
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelVersion'
+          description: Model version details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a model version
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+  /models/{name}/versions/{version}:
+    delete:
+      operationId: delete_model_version
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The version of the model to delete
+        explode: false
+        in: path
+        name: version
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: delete a model version
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+    get:
+      operationId: get_model_version
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The version of the model to retrieve
+        explode: false
+        in: path
+        name: version
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelVersion'
+          description: Model Version details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: get a model version
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+    patch:
+      operationId: update_model_version
+      parameters:
+      - description: The unique name of the model
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The version of the model to retrieve
+        explode: false
+        in: path
+        name: version
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelVersion'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelVersion'
+          description: Model version details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: update a model version
+      tags:
+      - Models
+      x-openapi-router-controller: apis_server.controllers.models_controller
+  /projects:
+    get:
+      operationId: search_projects
+      parameters:
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: search Project Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for projects
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+    post:
+      operationId: create_project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        description: Project object to be created
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: Project details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a project
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}:
+    delete:
+      operationId: delete_project
+      parameters:
+      - description: The ID of the project object to be deleted
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          pattern: ^[a-zA-Z0-9-]+$
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Delete a project
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+    get:
+      operationId: retrieve_project
+      parameters:
+      - description: The ID of the project object to be retrieved
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: Project details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Retrieve a project
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+    patch:
+      operationId: update_project
+      parameters:
+      - description: The ID of the project object to be updated
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        description: Project object to be updated
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: Project details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Update a project
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}/datasets:
+    get:
+      operationId: search_project_datasets
+      parameters:
+      - description: The ID of the project resource
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: List datasets Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for project's datasets
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}/experiments:
+    get:
+      operationId: search_project_experiments
+      parameters:
+      - description: The ID of the project resource
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: max_results
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page_token
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTokenList'
+          description: Search Experiment Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for project's experiments
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}/jobs:
+    get:
+      operationId: search_project_jobs
+      parameters:
+      - description: The ID of the project object related to the revision
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: List jobs Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for project's jobs
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}/models:
+    get:
+      operationId: search_project_models
+      parameters:
+      - description: The ID of the project object related to the revision
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: max_results
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page_token
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTokenList'
+          description: search Model Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for project's models
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /projects/{id}/revisions:
+    get:
+      operationId: search_project_revisions
+      parameters:
+      - description: The ID of the project object related to the revisions
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: List Revisions Response details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Search for project's revisions
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+    post:
+      operationId: create_project_revision
+      parameters:
+      - description: The ID of the project object related to the revision
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilesData'
+        description: files to update project with
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRevision'
+          description: Upload Status
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create project's revision
+      tags:
+      - Projects
+      x-openapi-router-controller: apis_server.controllers.projects_controller
+  /users:
+    get:
+      operationId: list_users
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLimitList'
+          description: List of users
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: list users
+      tags:
+      - users
+      x-openapi-router-controller: apis_server.controllers.users_controller
+    post:
+      operationId: create_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+        description: User object to be created
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: User details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Create a user
+      tags:
+      - users
+      x-openapi-router-controller: apis_server.controllers.users_controller
+  /users/{id}:
+    delete:
+      operationId: delete_user
+      parameters:
+      - description: The ID of the user object to be deleted
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          pattern: ^[a-zA-Z0-9-]+$
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Operation Status details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Delete a user
+      tags:
+      - users
+      x-openapi-router-controller: apis_server.controllers.users_controller
+    get:
+      operationId: retrieve_user
+      parameters:
+      - description: The ID of the user object to be retrieved
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: User details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Retrieve a user
+      tags:
+      - users
+      x-openapi-router-controller: apis_server.controllers.users_controller
+    patch:
+      operationId: update_user
+      parameters:
+      - description: The ID of the user object to be updated
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+        description: User object to be updated
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: User details
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected Error
+      security:
+      - jwt: []
+      summary: Update a user
+      tags:
+      - users
+      x-openapi-router-controller: apis_server.controllers.users_controller
+components:
+  parameters:
+    query_param:
+      explode: true
+      in: query
+      name: query
+      required: false
+      schema:
+        type: string
+      style: form
+    page_number_param:
+      explode: true
+      in: query
+      name: page_number
+      required: false
+      schema:
+        format: int32
+        type: integer
+      style: form
+    result_per_page_param:
+      explode: true
+      in: query
+      name: result_per_page
+      required: false
+      schema:
+        format: int32
+        type: integer
+      style: form
+    max_results_param:
+      explode: true
+      in: query
+      name: max_results
+      required: false
+      schema:
+        format: int32
+        type: integer
+      style: form
+    page_token_param:
+      explode: true
+      in: query
+      name: page_token
+      required: false
+      schema:
+        type: string
+      style: form
+  schemas:
+    Error:
+      example:
+        status: 404
+        title: Not found
+        detail: The requested resource doesn't exist on this server
+      properties:
+        status:
+          format: int32
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      type: object
+    Label:
+      example:
+        name: name
+        value: value
+      properties:
+        name:
+          type: string
+        value: {}
+      required:
+      - name
+      - value
+      type: object
+    FileVersion:
+      example:
+        name: name
+        version: version
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+      required:
+      - name
+      - version
+      type: object
+    File:
+      example:
+        name: name
+        size: 456908
+        is_dir: false
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        is_dir:
+          type: boolean
+      required:
+      - name
+      - size
+      - is_dir
+      type: object
+    Dataset:
+      example:
+        last_update: last_update
+        name: name
+        id: id
+        description: description
+        label:
+        - name: name
+          value: value
+        - name: name
+          value: value
+        create_at: creation_date
+        version: version
+      properties:
+        id:
+          readOnly: true
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        labels:
+          items:
+            $ref: '#/components/schemas/Label'
+          type: array
+        version:
+          readOnly: true
+          type: string
+        create_at:
+          readOnly: true
+          type: string
+        last_update:
+          readOnly: true
+          type: string
+      required:
+      - description
+      - name
+      type: object
+    DatasetVersion:
+      example:
+        name: name
+        bucket_tree:
+        - name: name
+          version: version
+        - name: name
+          version: version
+        id: id
+        dataset: dataset
+        author:
+          id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        related_bucket: bucketname
+        size: 600000
+        create_at: 2020-12-12 10:30:50
+      properties:
+        id:
+          type: string
+        dataset:
+          type: string
+        name:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        related_bucket:
+          readOnly: true
+          type: string
+        bucket_tree:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+        size:
+          format: uint64
+          type: integer
+        create_at:
+          readOnly: true
+          type: string
+      required:
+      - dataset
+      - related_bucket
+      type: object
+    Status:
+      example:
+        message: message
+        status: 0
+      properties:
+        status:
+          format: int32
+          type: integer
+        message:
+          type: string
+      required:
+      - message
+      - status
+      type: object
+    JobStatus:
+      example:
+        details: message
+        state: PREPARING
+      properties:
+        state:
+          enum:
+          - PREPARING
+          - STARTING
+          - RUNNING
+          - STOPPED
+          - FAILED
+          - ABORTED
+          - SUCCEEDED
+          type: string
+        details:
+          type: string
+      required:
+      - details
+      - state
+      type: object
+    User:
+      example:
+        id: 12566-267788-14255-15256
+        username: mario
+        name: Mario Bianchi
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - name
+      - username
+      type: object
+    UserDetail:
+      example:
+        id: 12566-267788-14255-15256
+        username: mario
+        first_name: Mario
+        last_name: Bianchi
+        email: mario@example.com
+        groups: ["manager"]
+        email_verified: true
+        enabled: true
+        createdTimestamp: 1614085557161
+      properties:
+        id:
+          readOnly: true
+          type: string
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        groups:
+          items:
+            type: string
+          type: array
+        email_verified:
+          readOnly: true
+          type: boolean
+        enabled:
+          readOnly: true
+          type: boolean
+        createdTimestamp:
+          readOnly: true
+          type: string
+      required:
+      - email
+      - first_name
+      - last_name
+      - username
+      type: object
+    Environment:
+      example:
+        image: ilyde/minimal-py37:1.0-12-2020
+        name: Mininal Py37
+      properties:
+        image:
+          type: string
+        name:
+          type: string
+      required:
+      - image
+      - name
+      type: object
+    HardwareTier:
+      example:
+        name: default
+        cpus: 2
+        ram: 4096
+        gpu: 0
+      properties:
+        name:
+          type: string
+        cpus:
+          format: uint32
+          type: integer
+        ram:
+          format: uint32
+          type: integer
+        gpu:
+          format: uint32
+          type: integer
+      required:
+      - cpus
+      - gpu
+      - name
+      - ram
+      type: object
+    Job:
+      example:
+        hardware:
+          name: default
+          cpus: 2
+          ram: 4096
+          gpu: 0
+        owner:
+          id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        environment:
+          image: ilyde/minimal-py37:1.0-12-2020
+          name: Mininal Py37
+        kind: RUN
+        last_update: last_update
+        name: name
+        id: id
+        state: PREPARING
+        spec:
+          command: python train.py
+          revision: project revision
+        create_at: create_at
+        labels:
+        - name: name
+          value: value
+        - name: name
+          value: value
+        uptime: 0
+      properties:
+        id:
+          readOnly: true
+          type: string
+        kind:
+          enum:
+          - RUN
+          - DEPLOYMENT
+          - WORKSPACE
+          - EXPERIMENT
+          type: string
+        name:
+          type: string
+        hardware:
+          $ref: '#/components/schemas/HardwareTier'
+        environment:
+          $ref: '#/components/schemas/Environment'
+        spec:
+          type: object
+        state:
+          enum:
+          - PREPARING
+          - STARTING
+          - RUNNING
+          - STOPPED
+          - FAILED
+          - ABORTED
+          - SUCCEEDED
+          readOnly: true
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        labels:
+          items:
+            $ref: '#/components/schemas/Label'
+          type: array
+        uptime:
+          format: uint32
+          readOnly: true
+          type: integer
+        create_at:
+          readOnly: true
+          type: string
+        last_update:
+          readOnly: true
+          type: string
+      required:
+      - environment
+      - hardware
+      - kind
+      - labels
+      - name
+      - spec
+      type: object
+    Project:
+      example:
+        template: GENERIC
+        owner:
+          id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        visibility: PRIVATE
+        members:
+        - id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        - id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        last_update: last_update
+        name: name
+        description: description
+        id: id
+        state: OPEN
+        create_at: create_at
+        labels:
+        - name: name
+          value: value
+        - name: name
+          value: value
+      properties:
+        id:
+          readOnly: true
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          enum:
+          - PRIVATE
+          - PUBLIC
+          type: string
+        template:
+          enum:
+          - GENERIC
+          - SKLEARN
+          type: string
+        state:
+          enum:
+          - OPEN
+          - CLOSED
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        members:
+          items:
+            $ref: '#/components/schemas/User'
+          type: array
+        labels:
+          items:
+            $ref: '#/components/schemas/Label'
+          type: array
+        create_at:
+          readOnly: true
+          type: string
+        last_update:
+          readOnly: true
+          type: string
+      required:
+      - description
+      - name
+      - template
+      - visibility
+      type: object
+    ProjectRevision:
+      example:
+        author:
+          id: 12566-267788-14255-15256
+          username: mario
+          name: Mario Bianchi
+        commit: commit
+        project: project
+        file_tree:
+        - name: name
+          version: version
+        - name: name
+          version: version
+        id: id
+        create_at: create_at
+      properties:
+        id:
+          readOnly: true
+          type: string
+        commit:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        project:
+          type: string
+        file_tree:
+          items:
+            $ref: '#/components/schemas/FileVersion'
+          readOnly: true
+          type: array
+        create_at:
+          readOnly: true
+          type: string
+      required:
+      - author
+      - commit
+      - project
+      type: object
+    Model:
+      example:
+        latest_versions:
+        - status_message: status_message
+          run_id: run_id
+          creation_timestamp: 6
+          description: description
+          source: source
+          version: version
+          run_link: run_link
+          tags:
+            key: value
+          user_id: user_id
+          name: name
+          last_updated_timestamp: 0
+          current_stage: current_stage
+          status: status
+        - status_message: status_message
+          run_id: run_id
+          creation_timestamp: 6
+          description: description
+          source: source
+          version: version
+          run_link: run_link
+          tags:
+            key: value
+          user_id: user_id
+          name: name
+          last_updated_timestamp: 0
+          current_stage: current_stage
+          status: status
+        creation_timestamp: 5
+        name: name
+        last_updated_timestamp: 1
+        description: description
+        tags:
+          key: value
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: object
+        latest_versions:
+          items:
+            $ref: '#/components/schemas/ModelVersion'
+          readOnly: true
+          type: array
+        last_updated_timestamp:
+          readOnly: true
+          type: integer
+        creation_timestamp:
+          readOnly: true
+          type: integer
+      required:
+      - description
+      - name
+      type: object
+    ModelVersion:
+      example:
+        status_message: status_message
+        run_id: run_id
+        creation_timestamp: 6
+        description: description
+        source: source
+        version: version
+        run_link: run_link
+        tags:
+          key: value
+        user_id: user_id
+        name: name
+        last_updated_timestamp: 0
+        current_stage: current_stage
+        status: status
+      properties:
+        name:
+          type: string
+        source:
+          type: string
+        description:
+          type: string
+        version:
+          readOnly: true
+          type: string
+        user_id:
+          readOnly: true
+          type: string
+        stage:
+          enum:
+          - None
+          - Staging
+          - Production
+          - Archived
+          type: string
+          writeOnly: true
+        current_stage:
+          readOnly: true
+          type: string
+        run_id:
+          type: string
+        run_link:
+          type: string
+        status:
+          readOnly: true
+          type: string
+        status_message:
+          readOnly: true
+          type: string
+        tags:
+          type: object
+        last_updated_timestamp:
+          readOnly: true
+          type: integer
+        creation_timestamp:
+          readOnly: true
+          type: integer
+      required:
+      - description
+      - name
+      - run_id
+      - source
+      type: object
+    Experiment:
+      example:
+        data: '{}'
+        info: '{}'
+      properties:
+        info:
+          type: object
+        data:
+          type: object
+      type: object
+    Generic:
+      type: object
+    FileData:
+      format: binary
+      type: string
+    FilesData:
+      properties:
+        files:
+          items:
+            format: binary
+            type: string
+          type: array
+      type: object
+    Artifacts:
+      example:
+        data:
+        - name: name
+          size: 456908
+        - name: name
+          size: 456908
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
+    PageTokenList:
+      example:
+        next_page_token: next_page_token
+        data:
+        - ""
+        - ""
+      properties:
+        next_page_token:
+          type: string
+        data:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/Model'
+            - $ref: '#/components/schemas/Experiment'
+            - $ref: '#/components/schemas/ModelVersion'
+          type: array
+      type: object
+    PageLimitList:
+      example:
+        total: 0
+        page: 6
+        data:
+        - name: name
+          bucket_tree:
+          - name: name
+            version: version
+          - name: name
+            version: version
+          id: id
+          dataset: dataset
+        - name: name
+          bucket_tree:
+          - name: name
+            version: version
+          - name: name
+            version: version
+          id: id
+          dataset: dataset
+        limit: 1
+      properties:
+        total:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        limit:
+          format: int32
+          type: integer
+        data:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/DatasetVersion'
+            - $ref: '#/components/schemas/Dataset'
+            - $ref: '#/components/schemas/Project'
+            - $ref: '#/components/schemas/ProjectRevision'
+            - $ref: '#/components/schemas/Job'
+            - $ref: '#/components/schemas/Environment'
+            - $ref: '#/components/schemas/HardwareTier'
+            - $ref: '#/components/schemas/UserDetail'
+          type: array
+      required:
+      - data
+      - limit
+      - page
+      - total
+      type: object
+  securitySchemes:
+    jwt:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+      x-bearerInfoFunc: apis_server.controllers.security_controller_.info_from_jwt
