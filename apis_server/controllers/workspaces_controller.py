@@ -21,7 +21,7 @@ import six
 from apis_server.decorators import catch_exception
 from apis_server.serializers import StatusSerializer
 from apis_server.serializers.workspace_serializer import WorkspaceSerializer
-from apis_server import util, permissions
+from apis_server import util, permissions, ErrorSerializer
 from apis_server.services import get_projects_services_stub, get_workspaces_services_stub, query_elasticsearch
 from protos import project_pb2, job_pb2
 
@@ -81,6 +81,10 @@ def delete_workspace(id_, **kwargs):
     stub = get_workspaces_services_stub()
     response = stub.Delete(job_pb2.ID(id=id_))
 
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
@@ -132,6 +136,11 @@ def start_workspace(id_, start_with_latest_version=False, **kwargs):
         w = stub.Update(w)
 
     response = stub.Start(job_pb2.ID(id=w.id))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
@@ -165,5 +174,9 @@ def stop_workspace(id_, **kwargs):
 
     stub = get_workspaces_services_stub()
     response = stub.Stop(job_pb2.ID(id=id_))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
 
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))

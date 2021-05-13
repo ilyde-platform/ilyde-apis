@@ -22,7 +22,7 @@ from mlflow.entities import ViewType
 from apis_server.decorators import catch_exception
 from apis_server.serializers import ArtifactsSerializer, StatusSerializer
 from apis_server.serializers.experiment_serializer import ExperimentSerializer
-from apis_server import util, permissions
+from apis_server import util, permissions, ErrorSerializer
 from apis_server.serializers.file_serializer import FileSerializer
 from apis_server.services import get_experiments_services_stub, get_projects_services_stub, query_elasticsearch, \
     get_mlflow_client
@@ -168,6 +168,10 @@ def stop_experiment(id_, **kwargs):
     stub = get_experiments_services_stub()
     response = stub.Stop(job_pb2.ID(id=id_))
 
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
@@ -185,5 +189,9 @@ def submit_experiment(body, **kwargs):
     check_experiment_permission(serializer, kwargs["token_info"])
     stub = get_experiments_services_stub()
     response = stub.Submit(job_pb2.Experiment(**body))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
 
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))

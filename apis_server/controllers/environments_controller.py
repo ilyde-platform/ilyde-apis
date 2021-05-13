@@ -23,7 +23,7 @@ from apis_server.permissions import IsAdmin
 from apis_server.serializers.hardware_tier_serializer import HardwareTierSerializer
 from apis_server.serializers.page_limit_list_serializer import PageLimitListSerializer
 from apis_server.serializers.status_serializer import StatusSerializer
-from apis_server import util
+from apis_server import util, ErrorSerializer
 from apis_server.services import get_environments_services_stub
 from protos import job_pb2
 
@@ -53,8 +53,13 @@ def delete_hardwaretier(id_, **kwargs):
     :rtype: StatusSerializer
     """
     stub = get_environments_services_stub()
-    status = stub.DeleteHardwareTier(job_pb2.ID(id=id_))
-    return StatusSerializer.from_dict(util.deserialize_protobuf(status))
+    response = stub.DeleteHardwareTier(job_pb2.ID(id=id_))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
+    return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
 @catch_exception

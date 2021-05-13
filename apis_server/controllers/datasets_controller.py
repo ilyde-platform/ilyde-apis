@@ -118,6 +118,10 @@ def delete_dataset(id_, **kwargs):
 
     response = stub.DeleteDataset(dataset_pb2.ID(id=id_))
 
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 

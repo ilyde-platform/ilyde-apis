@@ -75,6 +75,10 @@ def delete_modelapi(id_, **kwargs):
     stub = get_modelapis_services_stub()
     response = stub.Delete(job_pb2.ID(id=id_))
 
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
@@ -158,6 +162,10 @@ def start_modelapi(id_, **kwargs):
     stub = get_modelapis_services_stub()
     response = stub.Start(job_pb2.ID(id=id_))
 
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
+
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
 
@@ -191,5 +199,9 @@ def stop_modelapi(id_, **kwargs):
     check_modelapi_permission(modelapi, kwargs["token_info"])
     stub = get_modelapis_services_stub()
     response = stub.Stop(job_pb2.ID(id=id_))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
 
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))

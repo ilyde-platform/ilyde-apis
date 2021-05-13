@@ -38,7 +38,7 @@ def check_model_permission(obj, token_info):
 
 def get_mlflow_model(name):
     mlflow_client = get_mlflow_client()
-    return  mlflow_client.get_registered_model(name)
+    return mlflow_client.get_registered_model(name)
 
 
 @catch_exception

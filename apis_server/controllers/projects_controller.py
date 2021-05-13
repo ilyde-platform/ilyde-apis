@@ -28,7 +28,7 @@ from apis_server.decorators import catch_exception
 from apis_server.serializers import ProjectRevisionSerializer, StatusSerializer, PageTokenListSerializer, \
     ModelSerializer, ModelVersionSerializer
 from apis_server.serializers.project_serializer import ProjectSerializer
-from apis_server import util, permissions
+from apis_server import util, permissions, ErrorSerializer
 from apis_server.services import get_projects_services_stub, get_minio_client, get_datasets_services_stub, \
     get_experiments_services_stub, get_mlflow_client, get_runs_services_stub, get_workspaces_services_stub
 from protos import project_pb2, dataset_pb2, job_pb2
@@ -116,6 +116,10 @@ def delete_project(id_, **kwargs):
     check_project_permission(proj, kwargs["token_info"])
     stub = get_projects_services_stub()
     response = stub.Delete(project_pb2.ID(id=proj.id))
+
+    if response.status != 200:
+        return ErrorSerializer(status=response.status, title="Api Error",
+                               detail=response.message), response.status
 
     return StatusSerializer.from_dict(util.deserialize_protobuf(response))
 
