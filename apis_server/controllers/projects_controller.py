@@ -358,7 +358,7 @@ def close_project(id_, **kwargs):
     if proj.owner != kwargs["user"]:
         raise connexion.ProblemException(status=403, title="Permission Denied",
                                          detail="Doesn't have enough permissions to take this action")
-    proj.state = "CLOSED"
+    proj.state = project_pb2.STATE.CLOSED
     stub = get_projects_services_stub()
     response = stub.Update(proj)
 
@@ -380,11 +380,12 @@ def add_project_member(id_, body, **kwargs):
         raise connexion.ProblemException(status=403, title="Permission Denied",
                                          detail="Doesn't have enough permissions to take this action")
 
-    proj.members.add(body["user"])
-    stub = get_projects_services_stub()
-    response = stub.Update(proj)
+    if body["user"] not in proj.members:
+        proj.members.append(body["user"])
+        stub = get_projects_services_stub()
+        proj = stub.Update(proj)
 
-    return ProjectSerializer.from_dict(util.deserialize_protobuf(response))
+    return ProjectSerializer.from_dict(util.deserialize_protobuf(proj))
 
 
 @catch_exception
@@ -402,8 +403,9 @@ def remove_project_member(id_, body, **kwargs):
         raise connexion.ProblemException(status=403, title="Permission Denied",
                                          detail="Doesn't have enough permissions to take this action")
 
-    proj.members = [member for member in proj.members if member != body["user"]]
-    stub = get_projects_services_stub()
-    response = stub.Update(proj)
+    if body["user"] in proj.members:
+        proj.members.remove(body["user"])
+        stub = get_projects_services_stub()
+        proj = stub.Update(proj)
 
-    return ProjectSerializer.from_dict(util.deserialize_protobuf(response))
+    return ProjectSerializer.from_dict(util.deserialize_protobuf(proj))
