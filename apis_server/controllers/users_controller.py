@@ -107,7 +107,7 @@ def list_users(**kwargs):
     data = [UserSerializer(
         id=user.get("id"),
         username=user.get("username"),
-        first_name=user.get("firsName"),
+        first_name=user.get("firstName"),
         last_name=user.get("lastName"),
         enabled=user.get("enabled"),
         groups=format_groups(users.by_id(user.get("id")).groups.all()),
@@ -134,7 +134,7 @@ def retrieve_user(id_, **kwargs):
     return UserSerializer(
         id=user.u,
         username=user_detail.get("username"),
-        first_name=user_detail.get("firsName"),
+        first_name=user_detail.get("firstName"),
         last_name=user_detail.get("lastName"),
         enabled=user_detail.get("enabled"),
         email=user_detail.get("email"),
