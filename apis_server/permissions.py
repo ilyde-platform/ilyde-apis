@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from protos import project_pb2
+
 
 class BasePermission:
     """
@@ -56,4 +58,5 @@ class IsProjectMember(BasePermission):
 
     @classmethod
     def has_object_permission(cls, token_info, obj):
-        return token_info["sub"] in obj.members or "manager" in token_info["groups"] or obj.visibility == 'PUBLIC'
+        return token_info["sub"] in obj.members or "manager" in token_info["groups"]\
+               or obj.visibility == project_pb2.VISIBILITY.PUBLIC
