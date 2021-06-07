@@ -56,4 +56,4 @@ class IsProjectMember(BasePermission):
 
     @classmethod
     def has_object_permission(cls, token_info, obj):
-        return token_info["sub"] in obj.members or "manager" in token_info["groups"]
+        return token_info["sub"] in obj.members or "manager" in token_info["groups"] or obj.visibility == 'PUBLIC'
